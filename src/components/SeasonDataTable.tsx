@@ -14,8 +14,6 @@ export const SeasonDataTable = () => {
     season_id: SEASON_ID,
   });
 
-  console.log(isLoading);
-
   function containerHeader() {
     return <Header variant="h2" description="seasonData.container.description">
       seasonData.container.title
