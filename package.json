@@ -7,7 +7,6 @@
     "@cloudscape-design/collection-hooks": "^1.0.52",
     "@cloudscape-design/components": "^3.0.739",
     "@cloudscape-design/global-styles": "^1.0.32",
-    "@reduxjs/toolkit": "^2.2.7",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
