@@ -1,4 +1,4 @@
-import { AppLayout, ContentLayout, Flashbar, Header, Link } from "@cloudscape-design/components"
+import { AppLayout, ContentLayout, Header, Link } from "@cloudscape-design/components"
 import { ReactNode } from "react";
 
 export interface AnyGamersAppLayoutProps {

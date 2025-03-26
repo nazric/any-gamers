@@ -1,7 +1,7 @@
 import { Alert, Container, Header, Select, Spinner, Table, TableProps } from "@cloudscape-design/components";
 import { useState } from "react";
 import { ChampionStat, useSummonerSeasons } from "../api/opgg";
-import { useChampions, useVersions } from "../api/dataDragon";
+import { DATA_DRAGON_BASE_URL, useChampions, useVersions } from "../api/dataDragon";
 
 const REGION = "na";
 const USERS = new Map([
@@ -97,6 +97,15 @@ export const SeasonDataTable = () => {
         id: "id",
         header: "Id",
         cell: (item) => item.id,
+      },
+      {
+        id: "portrait",
+        header: "",
+        cell: (item) => <img 
+          src={`${DATA_DRAGON_BASE_URL}/cdn/${versions[0]}/img/champion/${champions.get(item.id)!.id}.png`}
+          alt="name"
+          width="40"
+          />
       },
       {
         id: "name",

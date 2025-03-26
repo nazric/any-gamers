@@ -2,7 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import { useEffect, useState } from "react";
 
 // https://ddragon.leagueoflegends.com/api/versions.json
-const DATA_DRAGON_BASE_URL = "https://ddragon.leagueoflegends.com";
+export const DATA_DRAGON_BASE_URL = "https://ddragon.leagueoflegends.com";
 
 export interface Champion {
   "version": string;
