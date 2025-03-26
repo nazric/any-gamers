@@ -6,13 +6,9 @@ import { AnyGamersAppLayout } from './components/AnyGamersAppLayout';
 const LOCALE = 'en';
 
 function App() {
-  const breadcrumbItems = [
-    { text: 'breadcrumbs.text.home', href: '#' },
-    { text: 'breadcrumbs.text.service', href: '#' },
-  ];
   return (
     <I18nProvider locale={LOCALE} messages={[messages]}>
-      <AnyGamersAppLayout header="Any Gamers???" breadcrumbItems={breadcrumbItems}>
+      <AnyGamersAppLayout header="Any Gamers?">
         <SeasonDataTable/>
       </AnyGamersAppLayout>
     </I18nProvider>
