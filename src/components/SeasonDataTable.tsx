@@ -26,7 +26,7 @@ export const SeasonDataTable = () => {
   }
 
   const seasonOptions = getSeasonOptions();
-  const [shownSeason, setShownSeason] = useState(SEASONS[0]);
+  const [shownSeason, setShownSeason] = useState(-1);
   const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
 
   const {data: seasonData, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, GAME_TYPE);
@@ -46,10 +46,10 @@ export const SeasonDataTable = () => {
     const options = SEASONS.map(season_id => {
       return {
         value: season_id.toString(),
-        label: season_id.toString(),
+        label: `Season ${season_id.toString()}`,
       }
     });
-    options.push({
+    options.unshift({
       value: "-1",
       label: "All"
     })
