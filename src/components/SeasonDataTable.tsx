@@ -94,12 +94,7 @@ export const SeasonDataTable = () => {
   }
 
   function getColumnDefs(): TableProps.ColumnDefinition<ChampionStat>[] {
-    return [
-      {
-        id: "id",
-        header: "Id",
-        cell: (item) => item.id,
-      },
+    return [  
       {
         id: "portrait",
         header: "",
@@ -164,7 +159,7 @@ export const SeasonDataTable = () => {
 
   function getContent() {
     return <Container header={containerHeader()} >
-      <SpaceBetween size="xs">
+      <SpaceBetween size="xxs">
         {error || errorVersions || errorChampions ? errorAlert(error as string) : <></>}
         <FormField label="Gamer">
           <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
