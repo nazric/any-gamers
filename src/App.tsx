@@ -1,7 +1,6 @@
 import { I18nProvider } from '@cloudscape-design/components/i18n';
 import messages from '@cloudscape-design/components/i18n/messages/all.en';
 import { SeasonDataTable } from './components/SeasonDataTable';
-import { Provider } from 'react-redux';
 import { AnyGamersAppLayout } from './components/AnyGamersAppLayout';
 
 const LOCALE = 'en';
