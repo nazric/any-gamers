@@ -12,9 +12,9 @@ const USERS = new Map([
   ["Julian", "c9EO7L8faJn5HhQK83_bTgmEcR-bubIc3VXTmRyxPiHMIYE" ],
   ["Gian", "UHsuOOgQdq5GJttpg6dfq033wNjYGHuCXEZncWdH4D7bmH0" ],
 ]);
-const GAME_TYPE = "RANKED";
-const SEASONS = [1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 17, 19, 20, 21, 23, 25, 27].reverse()
-// const SEASONS = Array.from(Array(25).keys()).map(item => item + 1).reverse();
+const LATEST_SEASON = 31;
+const SEASONS = Array.from(Array(LATEST_SEASON).keys()).map(item => item + 1).reverse();
+SEASONS.splice(SEASONS.indexOf(9), 2)  // remove season 8 and 9 as they don't exist
 const DEFAULT_VERSION = "14.18.1";
 
 export const SeasonDataTable = () => {
@@ -29,7 +29,11 @@ export const SeasonDataTable = () => {
   const [shownSeason, setShownSeason] = useState(-1);
   const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
 
-  const {data: seasonData, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, GAME_TYPE);
+  const gameTypeOptions = getGameTypeOptions();
+  const [gameType, setGameType] = useState("RANKED");
+  const selectedGameType = gameTypeOptions.find(op => op.value === gameType)!;
+
+  const {data: seasonData, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, gameType);
   const {data: versions, loading: loadingVersions, error: errorVersions } = useVersions();
   const {data: champions, loading: loadingChampions, error: errorChampions} = useChampions(versions[0] ?? DEFAULT_VERSION);
 
@@ -51,9 +55,26 @@ export const SeasonDataTable = () => {
     });
     options.unshift({
       value: "-1",
-      label: "All"
+      label: "All Seasons"
     })
     return options;
+  }
+
+  function getGameTypeOptions() {
+    return [
+      {
+        value: "RANKED",
+        label: "Ranked (solo/duo & flex)"
+      },
+      {
+        value: "SOLORANKED",
+        label: "Ranked Solo/Duo"
+      },
+      {
+        value: "FLEXRANKED",
+        label: "Ranked Flex"
+      },
+    ]
   }
 
   function containerHeader() {
@@ -104,6 +125,7 @@ export const SeasonDataTable = () => {
       {error || errorVersions || errorChampions ? errorAlert(error as string) : <></>}
       <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
       <Select options={seasonOptions} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
+      <Select options={gameTypeOptions} selectedOption={selectedGameType} onChange={(e) => setGameType(e.detail.selectedOption.value!)} ></Select>
       {getTable()}
     </Container>
   }
