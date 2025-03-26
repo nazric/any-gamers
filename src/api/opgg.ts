@@ -112,7 +112,7 @@ export const useSummonerSeasons = (seasons: number[], region: string, user: stri
       setError("Error fetching from OP.GG: " + reason);
       setLoading(false);
     }
-    
+
     const fetchData = async () => {
       setLoading(true);
 
@@ -141,13 +141,13 @@ export const useSummonerSeasons = (seasons: number[], region: string, user: stri
 };
 
 function createAllSeason(season_map: Map<number, SeasonData>, game_type: string) {
-  const allSeasons = {} as SeasonData;
+  const allSeasons = {play: 0, lose: 0, win: 0} as SeasonData;
   const champStats = new Map<number, ChampionStat>();
   season_map.forEach(season => {
     if (game_type !== "FLEXRANKED" || season.game_type === "FLEXRANKED") {
-      allSeasons.play += season.play;
-      allSeasons.lose += season.lose;
-      allSeasons.win += season.win;
+      allSeasons.play += season.play ?? 0;
+      allSeasons.lose += season.lose ?? 0;
+      allSeasons.win += season.win ?? 0;
       if (season.champion_stats) {
         season.champion_stats.forEach(champ => {
           if (champStats.has(champ.id)) {

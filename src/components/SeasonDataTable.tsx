@@ -1,4 +1,4 @@
-import { Alert, Container, Header, Select, Spinner, Table, TableProps } from "@cloudscape-design/components";
+import { Alert, Container, FormField, Header, KeyValuePairs, Select, SpaceBetween, Spinner, Table, TableProps } from "@cloudscape-design/components";
 import { useState } from "react";
 import { ChampionStat, useSummonerSeasons } from "../api/opgg";
 import { DATA_DRAGON_BASE_URL, useChampions, useVersions } from "../api/dataDragon";
@@ -25,10 +25,6 @@ export const SeasonDataTable = () => {
     label: user
   }
 
-  const seasonOptions = getSeasonOptions();
-  const [shownSeason, setShownSeason] = useState(-1);
-  const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
-
   const gameTypeOptions = getGameTypeOptions();
   const [gameType, setGameType] = useState("RANKED");
   const selectedGameType = gameTypeOptions.find(op => op.value === gameType)!;
@@ -36,6 +32,10 @@ export const SeasonDataTable = () => {
   const {data: seasonData, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, gameType);
   const {data: versions, loading: loadingVersions, error: errorVersions } = useVersions();
   const {data: champions, loading: loadingChampions, error: errorChampions} = useChampions(versions[0] ?? DEFAULT_VERSION);
+
+  const seasonOptions = getSeasonOptions();
+  const [shownSeason, setShownSeason] = useState(-1);
+  const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
 
   function getUserOptions() {
     return Array.from(USERS.keys()).map(u => {
@@ -47,15 +47,17 @@ export const SeasonDataTable = () => {
   }
 
   function getSeasonOptions() {
-    const options = SEASONS.map(season_id => {
-      return {
-        value: season_id.toString(),
-        label: `Season ${season_id.toString()}`,
+    const options = SEASONS
+      .map(season_id => {
+        return {
+          value: season_id.toString(),
+          label: `Season ${season_id.toString()} (${seasonData?.get(season_id)?.champion_stats.length ?? 0})`,
+        }
       }
-    });
+    );
     options.unshift({
       value: "-1",
-      label: "All Seasons"
+      label: `All Seasons (${seasonData?.get(-1)?.champion_stats.length ?? 0})`
     })
     return options;
   }
@@ -64,7 +66,7 @@ export const SeasonDataTable = () => {
     return [
       {
         value: "RANKED",
-        label: "Ranked (solo/duo & flex)"
+        label: "Ranked (Solo/Duo & Flex)"
       },
       {
         value: "SOLORANKED",
@@ -78,8 +80,8 @@ export const SeasonDataTable = () => {
   }
 
   function containerHeader() {
-    return <Header variant="h2" description="seasonData.container.description">
-      seasonData.container.title
+    return <Header variant="h2" description="Who let him pick Vayne?">
+      Gamers' Ranked Data
     </Header>
   }
 
@@ -125,17 +127,57 @@ export const SeasonDataTable = () => {
     ]
   }
 
+  function getSeasonStats() {
+    return <Container 
+      header={<Header variant="h3">
+        Season Stats
+      </Header>}
+    >
+      <KeyValuePairs
+        columns={4}
+        items={[
+          {
+            label: "Wins",
+            value: seasonData.get(shownSeason)?.win,
+            info: "Info"
+          },
+          {
+            label: "Losses",
+            value: seasonData.get(shownSeason)?.lose
+          },
+          {
+            label: "Total",
+            value: seasonData.get(shownSeason)?.play
+          },
+          {
+            label: "Win Rate",
+            value: (100 * seasonData.get(shownSeason)!.win / seasonData.get(shownSeason)!.play).toFixed(2)
+          },
+        ]}
+      />
+    </Container> 
+  }
+
   function getTable() {
     return <Table trackBy={"id"} items={seasonData.get(shownSeason)?.champion_stats!} columnDefinitions={getColumnDefs()} />
   }
 
   function getContent() {
     return <Container header={containerHeader()} >
-      {error || errorVersions || errorChampions ? errorAlert(error as string) : <></>}
-      <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
-      <Select options={seasonOptions} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
-      <Select options={gameTypeOptions} selectedOption={selectedGameType} onChange={(e) => setGameType(e.detail.selectedOption.value!)} ></Select>
-      {getTable()}
+      <SpaceBetween size="xs">
+        {error || errorVersions || errorChampions ? errorAlert(error as string) : <></>}
+        <FormField label="Gamer">
+          <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
+        </FormField>
+        <FormField label="Season">
+          <Select options={seasonOptions} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
+        </FormField>
+        <FormField label="Queue Type">
+          <Select options={gameTypeOptions} selectedOption={selectedGameType} onChange={(e) => setGameType(e.detail.selectedOption.value!)} ></Select>
+        </FormField>
+        {getSeasonStats()}
+        {getTable()}
+      </SpaceBetween>
     </Container>
   }
 
