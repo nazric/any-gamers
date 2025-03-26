@@ -89,7 +89,7 @@ export const useChampions = (version: string) => {
     };
 
     fetchData();
-  }, []);
+  }, [version]);
 
   return { data, loading, error };
 };

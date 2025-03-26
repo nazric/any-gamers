@@ -13,7 +13,7 @@ const USERS = new Map([
   ["Gian", "UHsuOOgQdq5GJttpg6dfq033wNjYGHuCXEZncWdH4D7bmH0" ],
 ]);
 const GAME_TYPE = "RANKED";
-const SEASONS = [1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 17, 19, 20, 21, 23, 25].reverse()
+const SEASONS = [1, 2, 3, 4, 5, 6, 7, 10, 11, 13, 15, 17, 19, 20, 21, 23, 25, 27].reverse()
 // const SEASONS = Array.from(Array(25).keys()).map(item => item + 1).reverse();
 const DEFAULT_VERSION = "14.18.1";
 
@@ -25,13 +25,11 @@ export const SeasonDataTable = () => {
     label: user
   }
 
+  const seasonOptions = getSeasonOptions();
   const [shownSeason, setShownSeason] = useState(SEASONS[0]);
-  const selectedSeason = {
-    value: shownSeason.toString(),
-    label: shownSeason.toString(),
-  }
+  const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
 
-  const {data, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, GAME_TYPE);
+  const {data: seasonData, loading, error } = useSummonerSeasons(SEASONS, REGION, selectedUser.value!, GAME_TYPE);
   const {data: versions, loading: loadingVersions, error: errorVersions } = useVersions();
   const {data: champions, loading: loadingChampions, error: errorChampions} = useChampions(versions[0] ?? DEFAULT_VERSION);
 
@@ -45,12 +43,17 @@ export const SeasonDataTable = () => {
   }
 
   function getSeasonOptions() {
-    return SEASONS.map(season_id => {
+    const options = SEASONS.map(season_id => {
       return {
         value: season_id.toString(),
         label: season_id.toString(),
       }
+    });
+    options.push({
+      value: "-1",
+      label: "All"
     })
+    return options;
   }
 
   function containerHeader() {
@@ -87,20 +90,20 @@ export const SeasonDataTable = () => {
       {
         id: "kda",
         header: "KDA",
-        cell: (item) => ((item.kill + item.assist) / item.death).toFixed(2),
+        cell: (item) => `${((item.kill + item.assist) / item.death).toFixed(2)} (${item.kill}/${item.assist}/${item.death})`,
       }
     ]
   }
 
   function getTable() {
-    return <Table trackBy={"id"} items={data.get(shownSeason)?.champion_stats!} columnDefinitions={getColumnDefs()} />
+    return <Table trackBy={"id"} items={seasonData.get(shownSeason)?.champion_stats!} columnDefinitions={getColumnDefs()} />
   }
 
   function getContent() {
     return <Container header={containerHeader()} >
       {error || errorVersions || errorChampions ? errorAlert(error as string) : <></>}
       <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
-      <Select options={getSeasonOptions()} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
+      <Select options={seasonOptions} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
       {getTable()}
     </Container>
   }
