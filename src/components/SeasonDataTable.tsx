@@ -1,7 +1,8 @@
-import { Alert, Container, FormField, Header, KeyValuePairs, Select, SpaceBetween, Spinner, Table, TableProps } from "@cloudscape-design/components";
+import { Alert, CollectionPreferences, CollectionPreferencesProps, Container, FormField, Header, KeyValuePairs, Pagination, Select, SpaceBetween, Spinner, Table, TableProps, TextFilter } from "@cloudscape-design/components";
 import { useState } from "react";
 import { ChampionStat, useSummonerSeasons } from "../api/opgg";
 import { DATA_DRAGON_BASE_URL, useChampions, useVersions } from "../api/dataDragon";
+import { useCollection } from "@cloudscape-design/collection-hooks";
 
 const REGION = "na";
 const USERS = new Map([
@@ -34,8 +35,33 @@ export const SeasonDataTable = () => {
   const {data: champions, loading: loadingChampions, error: errorChampions} = useChampions(versions[0] ?? DEFAULT_VERSION);
 
   const seasonOptions = getSeasonOptions();
-  const [shownSeason, setShownSeason] = useState(-1);
-  const selectedSeason = seasonOptions.find(op => op.value === shownSeason.toString())!;
+  const [season, setShownSeason] = useState(-1);
+  const selectedSeason = seasonOptions.find(op => op.value === season.toString())!;
+
+  const [preferences, setPreferences] = useState({
+    pageSize: 10,
+    contentDisplay: [
+      { id: 'portrait', visible: true,  },
+      { id: 'name', visible: true },
+      { id: 'winrate', visible: true },
+      { id: 'kda', visible: true },
+    ],
+  } as CollectionPreferencesProps.Preferences<ChampionStat>);
+  const {items, actions, filteredItemsCount, collectionProps, filterProps, paginationProps} = useCollection(
+    seasonData?.get(season)?.champion_stats ?? [],
+    {
+      filtering: {
+        empty: "No champions played this season",
+        noMatch: "No champions match filter",
+        filteringFunction(item, filteringText) {
+          return !champions.get(item.id)?.name.toLowerCase().search(filteringText.toLowerCase())
+        },
+      },
+      pagination: { pageSize: preferences.pageSize },
+      sorting: {},
+      selection: {},
+    }
+  )
 
   function getUserOptions() {
     return Array.from(USERS.keys()).map(u => {
@@ -133,20 +159,20 @@ export const SeasonDataTable = () => {
         items={[
           {
             label: "Wins",
-            value: seasonData.get(shownSeason)?.win,
+            value: seasonData.get(season)?.win,
             info: "Info"
           },
           {
             label: "Losses",
-            value: seasonData.get(shownSeason)?.lose
+            value: seasonData.get(season)?.lose
           },
           {
             label: "Total",
-            value: seasonData.get(shownSeason)?.play
+            value: seasonData.get(season)?.play
           },
           {
             label: "Win Rate",
-            value: (100 * seasonData.get(shownSeason)!.win / seasonData.get(shownSeason)!.play).toFixed(2)
+            value: seasonData.has(season) ? (100 * seasonData.get(season)!.win / seasonData.get(season)!.play).toFixed(2) : 0
           },
         ]}
       />
@@ -154,7 +180,58 @@ export const SeasonDataTable = () => {
   }
 
   function getTable() {
-    return <Table trackBy={"id"} items={seasonData.get(shownSeason)?.champion_stats!} columnDefinitions={getColumnDefs()} />
+    return <Table 
+      {...collectionProps}
+      trackBy={"id"} 
+      items={items} 
+      columnDefinitions={getColumnDefs()} 
+      columnDisplay={preferences.contentDisplay}
+      header={<Header variant="h3">Champions</Header>}
+      pagination={<Pagination {...paginationProps} />}
+      filter={
+        <TextFilter
+          {...filterProps}
+          countText={`${filteredItemsCount} Matches`}
+          filteringAriaLabel="Filter instances"
+        />
+      }
+      preferences={
+        <CollectionPreferences
+          title="Preferences"
+          confirmLabel="Confirm"
+          cancelLabel="Cancel"
+          pageSizePreference={{
+            title: "Page Size",
+            options: [{value: 10, label: "10"}, {value: 25, label: "25"}, {value: 50, label: "50"}, {value: 9999999999, label: "Unlimited"}]
+          }}
+          contentDisplayPreference={{
+            title: "Columns to display",
+            options: [
+              {
+                id: "portrait",
+                label: "Portrait",
+                alwaysVisible: true,
+              },
+              {
+                id: "name",
+                label: "Name",
+                alwaysVisible: true,
+              },
+              {
+                id: "winrate",
+                label: "Win Rate"
+              },
+              {
+                id: "kda",
+                label: "KDA"
+              }
+            ]
+          }}
+          preferences={preferences}
+          onConfirm={({ detail }) => setPreferences(detail)}
+        />
+      }
+    />
   }
 
   function getContent() {
