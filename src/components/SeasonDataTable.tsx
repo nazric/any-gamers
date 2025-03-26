@@ -160,7 +160,6 @@ export const SeasonDataTable = () => {
           {
             label: "Wins",
             value: seasonData.get(season)?.win,
-            info: "Info"
           },
           {
             label: "Losses",
