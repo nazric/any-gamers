@@ -7,11 +7,11 @@ import { useCollection } from "@cloudscape-design/collection-hooks";
 const REGION = "na";
 const USERS = new Map([
   ["Miguel", "mGI_ElabdzhqQ1TkTeoaiMbdAvUF86kTXH2nFlXe69GbPTU" ],
-  ["Eric", "_6anIVsUPQSeAefs5JHhcOUq8Pq6rEDJ2mqVRT2Zk4yqdcA" ],
-  ["Chris", "jTzL4ZBFwVLVsnsJ2JA4xvN9tJoLUiarTmGmWj0bkC3hNbo" ],
-  ["Evan", "mGI_ElabdzhqQ1TkTeoaiMbdAvUF86kTXH2nFlXe69GbPTU" ],
-  ["Julian", "c9EO7L8faJn5HhQK83_bTgmEcR-bubIc3VXTmRyxPiHMIYE" ],
-  ["Gian", "UHsuOOgQdq5GJttpg6dfq033wNjYGHuCXEZncWdH4D7bmH0" ],
+  ["Nazric", "_6anIVsUPQSeAefs5JHhcOUq8Pq6rEDJ2mqVRT2Zk4yqdcA" ],
+  ["Barrel Belly", "jTzL4ZBFwVLVsnsJ2JA4xvN9tJoLUiarTmGmWj0bkC3hNbo" ],
+  ["Ev4N", "t2OMDcHVY2Xbi-cIacRRC5cm7D-E3HDofrYURDtACCmThW4" ],
+  ["julian", "c9EO7L8faJn5HhQK83_bTgmEcR-bubIc3VXTmRyxPiHMIYE" ],
+  ["Gee Ann", "UHsuOOgQdq5GJttpg6dfq033wNjYGHuCXEZncWdH4D7bmH0" ],
 ]);
 const LATEST_SEASON = 31;
 const SEASONS = Array.from(Array(LATEST_SEASON).keys()).map(item => item + 1).reverse();
@@ -20,7 +20,7 @@ const DEFAULT_VERSION = "14.18.1";
 
 export const SeasonDataTable = () => {
 
-  const [user, setUser] = useState("Eric");
+  const [user, setUser] = useState("Miguel");
   const selectedUser = {
     value: USERS.get(user),
     label: user
@@ -189,7 +189,7 @@ export const SeasonDataTable = () => {
       loadingText="Loading Season Data..."
       columnDefinitions={getColumnDefs()} 
       columnDisplay={preferences.contentDisplay}
-      header={<Header variant="h3">Champions</Header>}
+      header={<Header variant="h3">{`Champions (${seasonData?.get(season)?.champion_stats.length})`}</Header>}
       pagination={<Pagination {...paginationProps} />}
       filter={
         <TextFilter
@@ -244,7 +244,7 @@ export const SeasonDataTable = () => {
         <FormField label="Gamer">
           <Select options={getUserOptions()} selectedOption={selectedUser} onChange={(e) => setUser(e.detail.selectedOption.label!)} ></Select>
         </FormField>
-        <FormField label="Season">
+        <FormField label="Season (champs played)">
           <Select options={seasonOptions} selectedOption={selectedSeason} onChange={(e) => setShownSeason(parseInt(e.detail.selectedOption.value!))} ></Select>
         </FormField>
         <FormField label="Queue Type">
