@@ -47,7 +47,7 @@ export const SeasonDataTable = () => {
       { id: 'kda', visible: true },
     ],
   } as CollectionPreferencesProps.Preferences<ChampionStat>);
-  const {items, actions, filteredItemsCount, collectionProps, filterProps, paginationProps} = useCollection(
+  const {items, filteredItemsCount, collectionProps, filterProps, paginationProps} = useCollection(
     seasonData?.get(season)?.champion_stats ?? [],
     {
       filtering: {
@@ -171,7 +171,7 @@ export const SeasonDataTable = () => {
           },
           {
             label: "Win Rate",
-            value: seasonData.has(season) ? (100 * seasonData.get(season)!.win / seasonData.get(season)!.play).toFixed(2) : 0
+            value: `${seasonData.has(season) ? (100 * seasonData.get(season)!.win / seasonData.get(season)!.play).toFixed(2) : 0}%`
           },
         ]}
       />
