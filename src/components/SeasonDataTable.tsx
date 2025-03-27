@@ -39,7 +39,7 @@ export const SeasonDataTable = () => {
   const selectedSeason = seasonOptions.find(op => op.value === season.toString())!;
 
   const [preferences, setPreferences] = useState({
-    pageSize: 10,
+    pageSize: 25,
     contentDisplay: [
       { id: 'portrait', visible: true,  },
       { id: 'name', visible: true },
