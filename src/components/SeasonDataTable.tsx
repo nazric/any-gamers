@@ -154,27 +154,29 @@ export const SeasonDataTable = () => {
         Season Stats
       </Header>}
     >
-      <KeyValuePairs
-        columns={4}
-        items={[
-          {
-            label: "Wins",
-            value: seasonData.get(season)?.win,
-          },
-          {
-            label: "Losses",
-            value: seasonData.get(season)?.lose
-          },
-          {
-            label: "Total",
-            value: seasonData.get(season)?.play
-          },
-          {
-            label: "Win Rate",
-            value: `${seasonData.has(season) ? (100 * seasonData.get(season)!.win / seasonData.get(season)!.play).toFixed(2) : 0}%`
-          },
-        ]}
-      />
+      {isLoading() ? getLoadingState() :
+        <KeyValuePairs
+          columns={4}
+          items={[
+            {
+              label: "Wins",
+              value: seasonData.get(season)?.win,
+            },
+            {
+              label: "Losses",
+              value: seasonData.get(season)?.lose
+            },
+            {
+              label: "Total",
+              value: seasonData.get(season)?.play
+            },
+            {
+              label: "Win Rate",
+              value: `${seasonData.has(season) ? (100 * seasonData.get(season)!.win / seasonData.get(season)!.play).toFixed(2) : 0}%`
+            },
+          ]}
+        />
+      }
     </Container> 
   }
 
@@ -183,6 +185,8 @@ export const SeasonDataTable = () => {
       {...collectionProps}
       trackBy={"id"} 
       items={items} 
+      loading={isLoading()}
+      loadingText="Loading Season Data..."
       columnDefinitions={getColumnDefs()} 
       columnDisplay={preferences.contentDisplay}
       header={<Header variant="h3">Champions</Header>}
@@ -252,9 +256,13 @@ export const SeasonDataTable = () => {
     </Container>
   }
 
+  function isLoading() {
+    return loading || loadingChampions || loadingVersions;
+  }
+
   function getLoadingState() {
     return <Spinner />
   }
 
-  return loading || loadingChampions || loadingVersions ? getLoadingState() : getContent();
+  return getContent();
 }
