@@ -11,7 +11,7 @@ export const AnyGamersAppLayout = ({ header,  children }: AnyGamersAppLayoutProp
   function content() {
     return <ContentLayout
       header={
-        <Header variant="h1" info={<Link variant="info">Info</Link>}>
+        <Header variant="h1">
           {header}
         </Header>
       }
